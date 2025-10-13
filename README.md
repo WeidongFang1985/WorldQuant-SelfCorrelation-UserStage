@@ -21,16 +21,16 @@
       ```
 
 2. **修改检测目标**
-    - 打开代码文件 `self-corr-version_1.1.0.py`
-    - 将 `alpha_list` 内的值替换为你想检测的 **Alpha ID** 列表，例如：
+    - 打开代码文件 `self-corr-version_1.2.0.py`
+    - 将 `ALPHA_LIST` 内的值替换为你想检测的 **Alpha ID** 列表，例如：
       ```python
-      alpha_list = ["alphaId_001", "alphaId_002", "alphaId_003"]
+      ALPHA_LIST = ["alphaId_001", "alphaId_002", "alphaId_003"]
       ```
 
 3. **运行程序**
     - 在终端中执行以下命令：
       ```bash
-      python3 self-corr-version_1.1.0.py
+      python3 self-corr-version_1.2.0.py
       ```
 
 ---
@@ -41,6 +41,9 @@
 - ✨ 新增推荐提升功能
 - 🚀 优化批量检测稳定性
 - 📈 提升 Sharpe 检验精度
+
+**Version 1.2.0** （Updated: Oct 13, 2025）
+- 🚀 将alpha_list和csv文件提升为全局变量
 
 ---
 

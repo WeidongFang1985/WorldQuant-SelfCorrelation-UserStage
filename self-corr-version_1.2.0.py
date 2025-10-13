@@ -7,12 +7,15 @@
 你需要做的只有两点
 1. 同文件夹下创建名为brain_credentials.txt的文件，
 里面的格式为：["账号", "密码"]
-2. 将alpha_list里面的值替换成你需要检测的id
+2. 将ALPHA_LIST里面的值替换成你需要检测的id
 3. 终端里运行python3 self-corr-version_1.1.0.py 即可
 -----------------------------------------------------------------
 Updated：Oct 12, 2025
 Version 1.1.0版，新增了推荐提升alpha的功能
 推荐提升的alpha，适当修改一下因子的参数，很容易救活这些“死掉”的因子
+-----------------------------------------------------------------
+Updated：Oct 13, 2025
+Version 1.2.0版，将alpha_list和csv文件提升为全局变量
 '''
 
 import requests
@@ -32,6 +35,8 @@ from requests.auth import HTTPBasicAuth
 # ---------------- 全局参数 ----------------
 CORR_CUTOFF = 0.7         # 相关性阈值：<=0.7必Pass；>0.7触发Sharpe对比
 SHARPE_PREMIUM = 1.10     # 被测Sharpe至少需高出“相关peer中最大Sharpe”10%
+ALPHA_LIST = ["nppwqQ18","YPPqKLgW","j22RNKME","A11MdY7g"]
+CSV_FILE = "测试.csv"
 
 # ---------------- 登录 ----------------
 def sign_in(username, password):
@@ -248,14 +253,10 @@ if __name__ == "__main__":
     download_data(flag_increment=True)
     os_alpha_ids, os_alpha_rets = load_data()
 
-    alpha_list = [
-        "wppxMm02", "N11mvbQ8", "XggQPGXl"
-    ]
-
-    print(f"即将测试的alpha数量为 {len(alpha_list)} 条")
+    print(f"即将测试的alpha数量为 {len(ALPHA_LIST)} 条")
 
     results = {}
-    for idx, alpha_id in enumerate(alpha_list, start=1):
+    for idx, alpha_id in enumerate(ALPHA_LIST, start=1):
         try:
             corr_series = calc_self_corr_series(alpha_id, os_alpha_rets=os_alpha_rets, os_alpha_ids=os_alpha_ids)
             max_corr = float(corr_series.max()) if not corr_series.empty else 0.0
@@ -302,7 +303,7 @@ if __name__ == "__main__":
 
     # 输出 CSV
     result_df = pd.DataFrame([{"Alpha_ID": k, **v} for k, v in results.items()])
-    result_df.to_csv("alpha_selfcorr_results.csv", index=False)
+    result_df.to_csv(f"{CSV_FILE}", index=False)
 
     # 汇总输出
     total = len(results)
@@ -344,4 +345,4 @@ if __name__ == "__main__":
         print("暂无符合条件的推荐Alpha。")
     print("=" * 80)
 
-    print("\n检测完成，结果已保存到 alpha_selfcorr_results.csv ✅")
+    print(f"\n检测完成，结果已保存到 {CSV_FILE} ✅")

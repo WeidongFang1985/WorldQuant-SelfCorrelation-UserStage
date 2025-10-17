@@ -8,7 +8,7 @@
 1. 同文件夹下创建名为brain_credentials.txt的文件，
 里面的格式为：["账号", "密码"]
 2. 将ALPHA_LIST里面的值替换成你需要检测的id
-3. 终端里运行python3 self-corr-version_1.1.0.py 即可
+3. 终端里运行python3 self-corr-version_1.2.0.py 即可
 -----------------------------------------------------------------
 Updated：Oct 12, 2025
 Version 1.1.0版，新增了推荐提升alpha的功能
@@ -35,8 +35,10 @@ from requests.auth import HTTPBasicAuth
 # ---------------- 全局参数 ----------------
 CORR_CUTOFF = 0.7         # 相关性阈值：<=0.7必Pass；>0.7触发Sharpe对比
 SHARPE_PREMIUM = 1.10     # 被测Sharpe至少需高出“相关peer中最大Sharpe”10%
-ALPHA_LIST = ["nppwqQ18","YPPqKLgW","j22RNKME","A11MdY7g"]
-CSV_FILE = "测试.csv"
+CSV_FILE = "Test.csv"
+ALPHA_LIST =  alpha_list = [
+                  "kqq5e0Q6","qMMXp9gj","9qqJoGZx"
+              ]
 
 # ---------------- 登录 ----------------
 def sign_in(username, password):
@@ -309,7 +311,7 @@ if __name__ == "__main__":
     total = len(results)
     pass_ids = [k for k, v in results.items() if v.get("Result") == "Pass"]
     fail_count = total - len(pass_ids)
-    print("\n" + "=" * 80)
+    print("\n" + "=" * 100)
     print(f"Result：共执行 {total} 条记录。Pass = {len(pass_ids)}，Fail = {fail_count}")
 
     if len(pass_ids) > 0:
@@ -320,7 +322,7 @@ if __name__ == "__main__":
     else:
         print("没有通过的 Alpha。")
 
-    print("=" * 80)
+    print("=" * 100)
 
     # ---------------- 推荐提升 Alpha ----------------
     recommend_ids = []
@@ -334,7 +336,7 @@ if __name__ == "__main__":
         ):
             recommend_ids.append(k)
 
-    print("\n" + "=" * 80)
+    print("\n" + "=" * 100)
     print(f"推荐提升Alpha：共{len(recommend_ids)}条记录")
     if recommend_ids:
         print("Alpha ID：")
@@ -343,6 +345,6 @@ if __name__ == "__main__":
             print("  " + ", ".join(group))
     else:
         print("暂无符合条件的推荐Alpha。")
-    print("=" * 80)
+    print("=" * 100)
 
     print(f"\n检测完成，结果已保存到 {CSV_FILE} ✅")

@@ -8,7 +8,7 @@
 1. 同文件夹下创建名为brain_credentials.txt的文件，
 里面的格式为：["账号", "密码"]
 2. 将ALPHA_LIST里面的值替换成你需要检测的id
-3. 终端里运行python3 self-corr-version_1.2.0.py 即可
+3. 终端里运行python3 self-corr-version_1.3.0.py 即可
 -----------------------------------------------------------------
 Updated：Oct 12, 2025
 Version 1.1.0版，新增了推荐提升alpha的功能
@@ -16,6 +16,9 @@ Version 1.1.0版，新增了推荐提升alpha的功能
 -----------------------------------------------------------------
 Updated：Oct 13, 2025
 Version 1.2.0版，将alpha_list和csv文件提升为全局变量
+-----------------------------------------------------------------
+Updated：Oct 17, 2025
+Version 1.3.0版，csv文件显示Fail的alpha能否提升
 '''
 
 import requests
@@ -35,10 +38,8 @@ from requests.auth import HTTPBasicAuth
 # ---------------- 全局参数 ----------------
 CORR_CUTOFF = 0.7         # 相关性阈值：<=0.7必Pass；>0.7触发Sharpe对比
 SHARPE_PREMIUM = 1.10     # 被测Sharpe至少需高出“相关peer中最大Sharpe”10%
-CSV_FILE = "Test.csv"
-ALPHA_LIST =  alpha_list = [
-                  "kqq5e0Q6","qMMXp9gj","9qqJoGZx"
-              ]
+CSV_FILE = "Oct17_推荐提升Alpha.csv"
+ALPHA_LIST =  ["E55k06Lm","O008X237","xAAN22Xg"]
 
 # ---------------- 登录 ----------------
 def sign_in(username, password):
@@ -289,7 +290,8 @@ if __name__ == "__main__":
                 "Sharpe_Current": sharpe_current,
                 "Sharpe_Peers_MaxOverCutoff": max_peer_sharpe,
                 "Sharpe_Premium": SHARPE_PREMIUM,
-                "Result": status
+                "Result": status,
+                "Wait_to_Approve": False
             }
 
             if len(peer_ids_over) == 0:
@@ -302,10 +304,6 @@ if __name__ == "__main__":
         except Exception as e:
             results[alpha_id] = {"Result": f"Error - {str(e)}"}
             print(f"{idx}. {alpha_id}: Error - {e}")
-
-    # 输出 CSV
-    result_df = pd.DataFrame([{"Alpha_ID": k, **v} for k, v in results.items()])
-    result_df.to_csv(f"{CSV_FILE}", index=False)
 
     # 汇总输出
     total = len(results)
@@ -335,6 +333,7 @@ if __name__ == "__main__":
             and v.get("Sharpe_Current", 0) / v.get("Sharpe_Peers_MaxOverCutoff") > 1.05
         ):
             recommend_ids.append(k)
+            results[k]["Wait_to_Approve"] = True
 
     print("\n" + "=" * 100)
     print(f"推荐提升Alpha：共{len(recommend_ids)}条记录")
@@ -346,5 +345,9 @@ if __name__ == "__main__":
     else:
         print("暂无符合条件的推荐Alpha。")
     print("=" * 100)
+
+    # 输出 CSV
+    result_df = pd.DataFrame([{"Alpha_ID": k, **v} for k, v in results.items()])
+    result_df.to_csv(f"{CSV_FILE}", index=False)
 
     print(f"\n检测完成，结果已保存到 {CSV_FILE} ✅")
